@@ -127,6 +127,7 @@ class SSD1306_FlexIO : public Adafruit_GFX {
   SSD1306_FlexIO(int8_t DC, int8_t RST, int8_t CS, SPIClass *spi, uint8_t height=SSD1306_LCDHEIGHT);
 
   bool begin(uint8_t switchvcc = SSD1306_SWITCHCAPVCC, bool reset=1);
+  void setClockRate( uint32_t  clockRate) {_clockRateSetting = clockRate;}
   void ssd1306_command(uint8_t c);
 
   void clearDisplay(void);
@@ -163,7 +164,7 @@ class SSD1306_FlexIO : public Adafruit_GFX {
     FlexSPI     *_flexspi=NULL;         // reference to which SPI object to use. 
     SPIClass    *_spi=NULL;              // SPI object
     volatile uint8_t _display_async_state;  // What state we are in.  Probably even numbers output page description, Odd output page data.
-    static const uint32_t clockRateSetting = 8000000;    
+    uint32_t _clockRateSetting = 8000000;    
     uint8_t _set_column_row_address[6];
     uint8_t _command_buffer[12];
 
@@ -174,9 +175,9 @@ class SSD1306_FlexIO : public Adafruit_GFX {
 
   void beginSPITransaction() __attribute__((always_inline)) {
     if (_spi)
-      _spi->beginTransaction(SPISettings(clockRateSetting, MSBFIRST, SPI_MODE0));
+      _spi->beginTransaction(SPISettings(_clockRateSetting, MSBFIRST, SPI_MODE0));
     else if(_flexspi)
-      _flexspi->beginTransaction(FlexSPISettings(clockRateSetting, MSBFIRST, SPI_MODE0));
+      _flexspi->beginTransaction(FlexSPISettings(_clockRateSetting, MSBFIRST, SPI_MODE0));
     digitalWrite(cs, LOW);
   }
 

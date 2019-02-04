@@ -148,6 +148,7 @@ SSD1306_FlexIO::SSD1306_FlexIO(int8_t DC, int8_t RST, int8_t CS, FlexSPI *flex_s
   rst = RST;
   cs = CS;
   _buffer = (uint8_t*)0;
+  _clockRateSetting = 8000000; 
 }
 
 // constructor for hardware SPI - we indicate DataCommand, ChipSelect, Reset
@@ -676,7 +677,10 @@ void SSD1306_FlexIO::displayAsyncCallBack(void) {
 
   if (_display_async_state == 1) {
     setDataMode();
-    _spi->transfer(_buffer, NULL, (SSD1306_LCDWIDTH*_height/8), _event_responder);
+    if (_spi)
+      _spi->transfer(_buffer, NULL, (SSD1306_LCDWIDTH*_height/8), _event_responder);
+    else if (_flexspi)
+      _flexspi->transfer(_buffer, NULL, (SSD1306_LCDWIDTH*_height/8), _event_responder);
   } else {
     // Finished the screen update. 
     setDataMode();
@@ -704,7 +708,10 @@ bool SSD1306_FlexIO::displayAsync(void) {
   setCommandMode(); // assert DC
 
   //Serial.println("DisplayAsync Sync Started");
-  _spi->transfer(_set_column_row_address, NULL, sizeof(_set_column_row_address), _event_responder);
+  if (_spi)
+    _spi->transfer(_set_column_row_address, NULL, sizeof(_set_column_row_address), _event_responder);
+  else if (_flexspi)
+    _flexspi->transfer(_set_column_row_address, NULL, sizeof(_set_column_row_address), _event_responder);
   return true;
 }
 
