@@ -32,7 +32,7 @@
 #define OLED_DC    5
 #define OLED_CS    6
 #define OLED_RESET 7
-FlexSPI SPIFLEX(2, 3, 4, -1); // Setup on (int mosiPin, int misoPin, int sckPin, int csPin=-1) :
+FlexIOSPI SPIFLEX(2, 3, 4, -1); // Setup on (int mosiPin, int misoPin, int sckPin, int csPin=-1) :
 SSD1306_FlexIO_32 display(OLED_DC, OLED_RESET, OLED_CS, &SPIFLEX);
 #else
 #define OLED_DC    21

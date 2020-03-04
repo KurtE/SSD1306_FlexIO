@@ -24,7 +24,7 @@ All text above, and the splash screen must be included in any redistribution
   typedef uint8_t PortMask;
 // #define HAVE_PORTREG
 
-#include <FlexSPI.h>
+#include <FlexIOSPI.h>
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 
@@ -123,7 +123,7 @@ All text above, and the splash screen must be included in any redistribution
 
 class SSD1306_FlexIO : public Adafruit_GFX {
  public:
-  SSD1306_FlexIO(int8_t DC, int8_t RST, int8_t CS, FlexSPI *flex_spi, uint8_t height=SSD1306_LCDHEIGHT);
+  SSD1306_FlexIO(int8_t DC, int8_t RST, int8_t CS, FlexIOSPI *flex_spi, uint8_t height=SSD1306_LCDHEIGHT);
   SSD1306_FlexIO(int8_t DC, int8_t RST, int8_t CS, SPIClass *spi, uint8_t height=SSD1306_LCDHEIGHT);
 
   bool begin(uint8_t switchvcc = SSD1306_SWITCHCAPVCC, bool reset=1);
@@ -161,7 +161,7 @@ class SSD1306_FlexIO : public Adafruit_GFX {
   uint8_t *_buffer;   // Keep a pointer to it. 
   void fastSPIwrite(uint8_t c);
 
-    FlexSPI     *_flexspi=NULL;         // reference to which SPI object to use. 
+    FlexIOSPI     *_flexiospi=NULL;         // reference to which SPI object to use. 
     SPIClass    *_spi=NULL;              // SPI object
     volatile uint8_t _display_async_state;  // What state we are in.  Probably even numbers output page description, Odd output page data.
     uint32_t _clockRateSetting = 8000000;    
@@ -176,8 +176,8 @@ class SSD1306_FlexIO : public Adafruit_GFX {
   void beginSPITransaction() __attribute__((always_inline)) {
     if (_spi)
       _spi->beginTransaction(SPISettings(_clockRateSetting, MSBFIRST, SPI_MODE0));
-    else if(_flexspi)
-      _flexspi->beginTransaction(FlexSPISettings(_clockRateSetting, MSBFIRST, SPI_MODE0));
+    else if(_flexiospi)
+      _flexiospi->beginTransaction(FlexIOSPISettings(_clockRateSetting, MSBFIRST, SPI_MODE0));
     digitalWrite(cs, LOW);
   }
 
@@ -185,8 +185,8 @@ class SSD1306_FlexIO : public Adafruit_GFX {
     digitalWrite(cs, HIGH);
     if (_spi)
       _spi->endTransaction();
-    else if(_flexspi)
-      _flexspi->endTransaction();
+    else if(_flexiospi)
+      _flexiospi->endTransaction();
   }
   // Always use on TLC, only use on T3.x if DC pin is not on hardware CS pin
   volatile uint8_t _dcpinAsserted = 0;
@@ -210,7 +210,7 @@ class SSD1306_FlexIO : public Adafruit_GFX {
 // Setup for 64 bit size...
 class SSD1306_FlexIO_64 : public SSD1306_FlexIO {
  public:
-  SSD1306_FlexIO_64(int8_t DC, int8_t RST, int8_t CS, FlexSPI *flexspi);
+  SSD1306_FlexIO_64(int8_t DC, int8_t RST, int8_t CS, FlexIOSPI *FlexIOSPI);
   SSD1306_FlexIO_64(int8_t DC, int8_t RST, int8_t CS,  SPIClass *spi);
 
  protected:
@@ -221,7 +221,7 @@ class SSD1306_FlexIO_64 : public SSD1306_FlexIO {
 // Setup for 32 bit size
 class SSD1306_FlexIO_32 : public SSD1306_FlexIO {
  public:
-  SSD1306_FlexIO_32(int8_t DC, int8_t RST, int8_t CS, FlexSPI *flexspi);
+  SSD1306_FlexIO_32(int8_t DC, int8_t RST, int8_t CS, FlexIOSPI *FlexIOSPI);
   SSD1306_FlexIO_32(int8_t DC, int8_t RST, int8_t CS, SPIClass *spi);
 
  protected:

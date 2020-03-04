@@ -30,7 +30,7 @@ All text above, and the splash screen below must be included in any redistributi
 
 #include <stdlib.h>
 
-#include <FlexSPI.h>
+#include <FlexIOSPI.h>
 #include "Adafruit_GFX.h"
 #include "SSD1306_FlexIO.h"
 
@@ -142,8 +142,8 @@ void SSD1306_FlexIO::drawPixel(int16_t x, int16_t y, uint16_t color) {
 
 
 // constructor for hardware SPI - we indicate DataCommand, ChipSelect, Reset
-SSD1306_FlexIO::SSD1306_FlexIO(int8_t DC, int8_t RST, int8_t CS, FlexSPI *flex_spi, uint8_t height) 
-    : Adafruit_GFX(SSD1306_LCDWIDTH, height), _flexspi(flex_spi) {
+SSD1306_FlexIO::SSD1306_FlexIO(int8_t DC, int8_t RST, int8_t CS, FlexIOSPI *flex_spi, uint8_t height) 
+    : Adafruit_GFX(SSD1306_LCDWIDTH, height), _flexiospi(flex_spi) {
   dc = DC;
   rst = RST;
   cs = CS;
@@ -183,8 +183,8 @@ bool SSD1306_FlexIO::begin(uint8_t vccstate,  bool reset) {
     pinMode(cs, OUTPUT);
     if (_spi) {
       _spi->begin();
-    } else if (_flexspi) {
-      _flexspi->begin();
+    } else if (_flexiospi) {
+      _flexiospi->begin();
     }
     beginSPITransaction();
 
@@ -286,8 +286,8 @@ void SSD1306_FlexIO::ssd1306_command(uint8_t c) {
     setCommandMode();
     if (_spi) {
       _spi->transfer(c);
-    } else if (_flexspi) {
-      _flexspi->transfer(c);
+    } else if (_flexiospi) {
+      _flexiospi->transfer(c);
     }
 }
 
@@ -313,8 +313,8 @@ void SSD1306_FlexIO::outputCommandString(uint8_t count, bool do_async) {
     // Not async so output command buffer. 
     if (_spi) {
       _spi->transfer(_command_buffer, NULL, count);
-    } else if (_flexspi) {
-      _flexspi->transfer(_command_buffer, NULL, count);
+    } else if (_flexiospi) {
+      _flexiospi->transfer(_command_buffer, NULL, count);
     }
     setDataMode();
     endSPITransaction();
@@ -430,10 +430,10 @@ void SSD1306_FlexIO::display(void) {
     _spi->transfer(_set_column_row_address, NULL, sizeof(_set_column_row_address));
     setDataMode();
     _spi->transfer(_buffer, NULL, (SSD1306_LCDWIDTH*_height/8));
-  } else if (_flexspi) {
-      _flexspi->transfer(_set_column_row_address, NULL, sizeof(_set_column_row_address));
+  } else if (_flexiospi) {
+      _flexiospi->transfer(_set_column_row_address, NULL, sizeof(_set_column_row_address));
       setDataMode();
-      _flexspi->transfer(_buffer, NULL, (SSD1306_LCDWIDTH*_height/8));
+      _flexiospi->transfer(_buffer, NULL, (SSD1306_LCDWIDTH*_height/8));
   }
   endSPITransaction();
 }
@@ -679,8 +679,8 @@ void SSD1306_FlexIO::displayAsyncCallBack(void) {
     setDataMode();
     if (_spi)
       _spi->transfer(_buffer, NULL, (SSD1306_LCDWIDTH*_height/8), _event_responder);
-    else if (_flexspi)
-      _flexspi->transfer(_buffer, NULL, (SSD1306_LCDWIDTH*_height/8), _event_responder);
+    else if (_flexiospi)
+      _flexiospi->transfer(_buffer, NULL, (SSD1306_LCDWIDTH*_height/8), _event_responder);
   } else {
     // Finished the screen update. 
     setDataMode();
@@ -710,8 +710,8 @@ bool SSD1306_FlexIO::displayAsync(void) {
   //Serial.println("DisplayAsync Sync Started");
   if (_spi)
     _spi->transfer(_set_column_row_address, NULL, sizeof(_set_column_row_address), _event_responder);
-  else if (_flexspi)
-    _flexspi->transfer(_set_column_row_address, NULL, sizeof(_set_column_row_address), _event_responder);
+  else if (_flexiospi)
+    _flexiospi->transfer(_set_column_row_address, NULL, sizeof(_set_column_row_address), _event_responder);
   return true;
 }
 
@@ -723,8 +723,8 @@ bool SSD1306_FlexIO::displayAsyncActive() {
 //======================================================================================
 // Hard coded 64 bit version
 // constructor for hardware SPI - we indicate DataCommand, ChipSelect, Reset
-SSD1306_FlexIO_64::SSD1306_FlexIO_64(int8_t DC, int8_t RST, int8_t CS, FlexSPI *flexspi) 
-    : SSD1306_FlexIO(DC, RST, CS, flexspi, 64)  {
+SSD1306_FlexIO_64::SSD1306_FlexIO_64(int8_t DC, int8_t RST, int8_t CS, FlexIOSPI *FlexIOSPI) 
+    : SSD1306_FlexIO(DC, RST, CS, FlexIOSPI, 64)  {
       _buffer = _buffer_data;
 }
 
@@ -736,8 +736,8 @@ SSD1306_FlexIO_64::SSD1306_FlexIO_64(int8_t DC, int8_t RST, int8_t CS, SPIClass 
 //======================================================================================
 // Hard coded 32 bit version
 // constructor for hardware SPI - we indicate DataCommand, ChipSelect, Reset
-SSD1306_FlexIO_32::SSD1306_FlexIO_32(int8_t DC, int8_t RST, int8_t CS, FlexSPI *flexspi) 
-    : SSD1306_FlexIO(DC, RST, CS, flexspi, 32)  {
+SSD1306_FlexIO_32::SSD1306_FlexIO_32(int8_t DC, int8_t RST, int8_t CS, FlexIOSPI *FlexIOSPI) 
+    : SSD1306_FlexIO(DC, RST, CS, FlexIOSPI, 32)  {
       _buffer = _buffer_data;
 }
 
